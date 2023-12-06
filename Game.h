@@ -9,6 +9,24 @@
 #include <unordered_set>
 #include <random>
 #include <chrono>
+using namespace std;
+
+// Enum to represent bunny color options
+enum BunnyColor {
+   BLACK = 1,
+   BROWN = 2,
+   WHITE = 3
+};
+
+struct Player {
+   float x;
+   float y;
+   float speed;
+   int score;
+   int lives;
+   bool lookingLeft;
+   BunnyColor selectedBunnyColor = BLACK; // Default bunny color
+};
 
 struct Car {
    float x;
