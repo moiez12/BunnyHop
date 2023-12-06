@@ -3,7 +3,7 @@
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(1000, 1000);
+    glutInitWindowSize(500, 500);
     glutCreateWindow("Bunny Hop");
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set clear color to black
