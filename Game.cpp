@@ -1,5 +1,32 @@
 #include "Game.h"
 
+mt19937 rng(std::random_device{}());
+uniform_real_distribution<float> dist(0.0f, 500.0f);
+
+
+// Set initial Car x,y positions and speed
+const int numCars = 3;
+Car cars[numCars];
+
+
+void initializeCars() {
+   for (int i = 0; i < numCars; ++i) {
+       cars[i].x = dist(rng);
+       if (i == 0) {
+           cars[i].y = 75.0f;
+           cars[i].initialCarSpeed = 3.0f;
+       } else if (i == 1) {
+           cars[i].y = 125.0f;
+           cars[i].initialCarSpeed = 5.0f;
+       } else if (i == 2) {
+           cars[i].y = 175.0f;
+           cars[i].initialCarSpeed = 4.0f;
+       }
+       cars[i].CarSpeed = cars[i].initialCarSpeed;
+   }
+}
+
+
 float playerX = 275.0f;     // Initial position of the player
 float playerY = 25.0f; 
 float obstacle1X = 0.0f;    // Initial position of the first obstacle

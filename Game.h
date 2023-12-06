@@ -8,6 +8,14 @@
 #include <ctime>
 #include <unordered_set>
 #include <random>
+#include <chrono>
+
+struct Car {
+   float x;
+   float y;
+   float initialCarSpeed;
+   float CarSpeed;
+};
 
 struct BlueSquare {
     float x;
