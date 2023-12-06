@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -DGL_GLEXT_PROTOTYPES
+CXXFLAGS = -std=c++17 -DGL_GLEXT_PROTOTYPES
 
 compile:
 	g++ -o game ${CXXFLAGS} main.cpp lib/Game.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -lGL -lglut
