@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "lib/Game.h"
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -6,9 +6,9 @@ int main(int argc, char** argv) {
     glutInitWindowSize(500, 500);
     glutCreateWindow("Bunny Hop");
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Set clear color to white
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set clear color to black
 
-    Draw draw;
+    initiliazeTime();
 
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
@@ -16,8 +16,20 @@ int main(int argc, char** argv) {
     glutSpecialFunc(specialKeys);
     glutTimerFunc(0, timer, 0);  // Start the timer
 
-    // Initialize blue squares
-    draw.initializeBlueSquares();
+    // Initialize Player
+    initializePlayer();
+
+    // Initialize Cars
+    initializeCars();
+
+    // Initialize Logs
+    initializeLogs();
+
+    // Initialize Carrots
+    initializeCarrots();
+
+    // Initialize Textures
+    initializeTextures();
 
     glutMainLoop();
     return 0;
