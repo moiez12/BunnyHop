@@ -1,4 +1,20 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "Game.h"
+#include "stb_image.h"
+
+
+// Set player positions and speed
+Player player;
+
+
+void initializePlayer() {
+   player.x = 275.0f;
+   player.y = 25.0f;
+   player.speed = 50.0f;
+   player.score = 0;
+   player.lives = 3;
+   player.lookingLeft = true;
+}
 
 mt19937 rng(std::random_device{}());
 uniform_real_distribution<float> dist(0.0f, 500.0f);
@@ -26,23 +42,80 @@ void initializeCars() {
    }
 }
 
+bool isMoving;
 
-float playerX = 275.0f;     // Initial position of the player
-float playerY = 25.0f; 
-float obstacle1X = 0.0f;    // Initial position of the first obstacle
-float obstacle1Y = 75.0f;
-float obstacle2X = 500.0f;  // Initial position of the second obstacle (opposite direction)
-float obstacle2Y = 175.0f;
-float obstacle3X = 200.0f;  // Initial position of the third obstacle
-float obstacle3Y = 275.0f;
-float obstacle4X = 300.0f;  // Initial position of the fourth obstacle (opposite direction)
-float obstacle4Y = 375.0f;
-float initialObstacleSpeed = 5.0f;  // Initial speed of the obstacles
-float obstacleSpeed = initialObstacleSpeed;  // Speed of the obstacles
-bool gameOver = false;
-int score = 0;
-int lives = 3;
-float playerSpeed = 50.0f;  // Player's movement speed
+
+void drawPlayer() {
+   glEnable(GL_TEXTURE_2D);
+   if (player.selectedBunnyColor == BLACK) {
+       playerTextureID = blackBunnyTextureID;
+   } else if (player.selectedBunnyColor == BROWN) {
+       playerTextureID = brownBunnyTextureID;
+   } else {
+       playerTextureID = whiteBunnyTextureID;
+   }
+  
+   if (isMoving){
+       glBindTexture(GL_TEXTURE_2D, playerFrames[currentFrame]);
+       if (frameCount == frameDelay) {
+           if(currentFrame < 3) {
+               currentFrame++;
+           } else {
+               currentFrame = 0;
+               isMoving = false;
+           }
+           frameCount = 0;
+       } else {
+           frameCount++;
+       }
+   } else {
+       glBindTexture(GL_TEXTURE_2D, playerTextureID);
+   }
+  
+   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+   glPushMatrix(); // Save the current transformation matrix
+
+
+   // Move to the player's position
+   glTranslatef(player.x, player.y, 0.0f);
+   if (!player.lookingLeft) { // Moving right
+       glScalef(-1.0f, 1.0f, 1.0f); // Flip the texture horizontally
+   }
+
+
+   glBegin(GL_QUADS);
+   glTexCoord2f(0.0f, 1.0f); glVertex2f(-25, -25);
+   glTexCoord2f(1.0f, 1.0f); glVertex2f(25, -25);
+   glTexCoord2f(1.0f, 0.0f); glVertex2f(25, 25);
+   glTexCoord2f(0.0f, 0.0f); glVertex2f(-25, 25);
+   glEnd();
+  
+   glPopMatrix(); // Restore the original transformation matrix
+  
+   glDisable(GL_TEXTURE_2D);
+}
+
+
+void drawCar(float x, float y, int color) {
+   glEnable(GL_TEXTURE_2D);
+   if (color == 2) {
+       glBindTexture(GL_TEXTURE_2D, bluecarTextureID);
+   } else if (color == 1) {
+       glBindTexture(GL_TEXTURE_2D, redcarTextureID);
+   } else {
+       glBindTexture(GL_TEXTURE_2D, greencarTextureID);
+   }
+   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+   glBegin(GL_QUADS);
+   glTexCoord2f(0.0f, 1.0f); glVertex2f(x - 25, y - 25);
+   glTexCoord2f(1.0f, 1.0f); glVertex2f(x + 25, y - 25);
+   glTexCoord2f(1.0f, 0.0f); glVertex2f(x + 25, y + 25);
+   glTexCoord2f(0.0f, 0.0f); glVertex2f(x - 25, y + 25);
+   glEnd();
+   glDisable(GL_TEXTURE_2D);
+}
 
 const int numBlueSquares = 3;
 BlueSquare blueSquares[numBlueSquares];
@@ -93,25 +166,6 @@ void Draw::initializeBlueSquares() {
     }
 }
 
-void Draw::drawPlayer() {
-    glColor3f(0.0f, 1.0f, 0.0f);  // Set color to green
-    glBegin(GL_QUADS);
-    glVertex2f(playerX - 25, playerY - 25);
-    glVertex2f(playerX + 25, playerY - 25);
-    glVertex2f(playerX + 25, playerY + 25);
-    glVertex2f(playerX - 25, playerY + 25);
-    glEnd();
-}
-
-void Draw::drawObstacle(float x, float y) {
-    glColor3f(1.0f, 0.0f, 0.0f);  // Set color to red
-    glBegin(GL_QUADS);
-    glVertex2f(x - 25, y - 25);
-    glVertex2f(x + 25, y - 25);
-    glVertex2f(x + 25, y + 25);
-    glVertex2f(x - 25, y + 25);
-    glEnd();
-}
 
 void Draw::drawBlueSquare(float x, float y, bool isPurple) {
     if (isPurple) {
@@ -346,6 +400,7 @@ void keyboard(unsigned char key, int x, int y) {
             break;
     }
 }
+
 
 void specialKeys(int key, int x, int y) {
     switch (key) {
