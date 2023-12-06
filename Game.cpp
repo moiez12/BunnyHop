@@ -42,6 +42,63 @@ void initializeCars() {
    }
 }
 
+// Set intial Carrot x,y positions
+const int numCarrots = 3;
+Carrot Carrots[numCarrots];
+
+
+std::unordered_set<float> occupiedXLevels;
+std::unordered_set<float> occupiedYLevels;
+
+
+void initializeCarrots() {
+   srand(static_cast<unsigned>(time(nullptr)));
+
+
+   occupiedXLevels.clear();  // Reset the set of occupied X-levels
+   occupiedYLevels.clear();  // Reset the set of occupied Y-levels
+
+
+   for (int i = 0; i < numCarrots; ++i) {
+       // Generate a random X-level that is not already occupied
+       float newXLevel;
+       do {
+           newXLevel = static_cast<float>(rand() % 10 * 50 + 25);  // Random multiple of 50 plus 25
+       } while (occupiedXLevels.count(newXLevel) > 0);
+
+
+       // Generate a random Y-level that is not already occupied
+       float newYLevel;
+       do {
+           newYLevel = static_cast<float>(rand() % 8 * 50 + 75);  // Random multiple of 50 plus 75
+       } while (occupiedYLevels.count(newYLevel) > 0);
+
+
+       Carrots[i].x = newXLevel;
+       Carrots[i].y = newYLevel;
+       Carrots[i].isVisible = true;
+
+
+       // Randomly determine whether the carrot should be Golden
+       std::random_device rd;
+       std::mt19937 gen(rd());
+       std::uniform_real_distribution<> dis(0.0, 1.0);
+       bool isGolden = dis(gen) < 0.05;  // Adjust the probability as needed
+
+
+       if (isGolden) {
+           Carrots[i].isGolden = true;
+       } else {
+           Carrots[i].isGolden = false;
+       }
+
+
+       // Mark the X and Y-levels as occupied
+       occupiedXLevels.insert(newXLevel);
+       occupiedYLevels.insert(newYLevel);
+   }
+}
+
 bool isMoving;
 
 
@@ -117,70 +174,28 @@ void drawCar(float x, float y, int color) {
    glDisable(GL_TEXTURE_2D);
 }
 
-const int numBlueSquares = 3;
-BlueSquare blueSquares[numBlueSquares];
+void drawCarrot(float x, float y, bool isGolden) {
+  
+   glEnable(GL_TEXTURE_2D);
+  
+   if (isGolden) {
+       glBindTexture(GL_TEXTURE_2D, goldcarrotTextureID);
+   } else {
+       glBindTexture(GL_TEXTURE_2D, carrotTextureID);
+   }
+   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-std::unordered_set<float> occupiedXLevels;
-std::unordered_set<float> occupiedYLevels;
+
+   glBegin(GL_QUADS);
+   glTexCoord2f(0.0f, 1.0f); glVertex2f(x - 12.5, y - 12.5);
+   glTexCoord2f(1.0f, 1.0f); glVertex2f(x + 12.5, y - 12.5);
+   glTexCoord2f(1.0f, 0.0f); glVertex2f(x + 12.5, y + 12.5);
+   glTexCoord2f(0.0f, 0.0f); glVertex2f(x - 12.5, y + 12.5);
+   glEnd();
+   glDisable(GL_TEXTURE_2D);
+}
 
 Draw draw;
-
-void Draw::initializeBlueSquares() {
-    srand(static_cast<unsigned>(time(nullptr)));
-
-    occupiedXLevels.clear();  // Reset the set of occupied X-levels
-    occupiedYLevels.clear();  // Reset the set of occupied Y-levels
-
-    for (int i = 0; i < numBlueSquares; ++i) {
-        // Generate a random X-level that is not already occupied
-        float newXLevel;
-        do {
-            newXLevel = static_cast<float>(rand() % 10 * 50 + 25);  // Random multiple of 50 plus 25
-        } while (occupiedXLevels.count(newXLevel) > 0);
-
-        // Generate a random Y-level that is not already occupied
-        float newYLevel;
-        do {
-            newYLevel = static_cast<float>(rand() % 8 * 50 + 75);  // Random multiple of 50 plus 75
-        } while (occupiedYLevels.count(newYLevel) > 0);
-
-        blueSquares[i].x = newXLevel;
-        blueSquares[i].y = newYLevel;
-        blueSquares[i].isVisible = true;
-
-        // Randomly determine whether the square should be purple
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dis(0.0, 1.0);
-        bool isPurple = dis(gen) < 0.05;  // Adjust the probability as needed
-
-        if (isPurple) {
-            blueSquares[i].isPurple = true;
-        } else {
-            blueSquares[i].isPurple = false;
-        }
-
-        // Mark the X and Y-levels as occupied
-        occupiedXLevels.insert(newXLevel);
-        occupiedYLevels.insert(newYLevel);
-    }
-}
-
-
-void Draw::drawBlueSquare(float x, float y, bool isPurple) {
-    if (isPurple) {
-        glColor3f(0.5f, 0.0f, 0.5f);  // Set color to purple
-    } else {
-        glColor3f(0.0f, 0.0f, 1.0f);  // Set color to blue
-    }
-
-    glBegin(GL_QUADS);
-    glVertex2f(x - 12.5, y - 12.5);
-    glVertex2f(x + 12.5, y - 12.5);
-    glVertex2f(x + 12.5, y + 12.5);
-    glVertex2f(x - 12.5, y + 12.5);
-    glEnd();
-}
 
 void Draw::drawText(const std::string& text, float x, float y) {
     glColor3f(0.0f, 0.0f, 0.0f);  // Set color to black

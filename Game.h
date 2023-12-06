@@ -35,11 +35,11 @@ struct Car {
    float CarSpeed;
 };
 
-struct BlueSquare {
-    float x;
-    float y;
-    bool isVisible;
-    bool isPurple;  // New field to track if the square is purple
+struct Carrot {
+   float x;
+   float y;
+   bool isVisible;
+   bool isGolden;
 };
 
 struct Draw {
